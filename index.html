@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="shortcut icon" href="./batman.png" type="image/png" />
+		<link rel="stylesheet" href="style.css" />
+		<script src="./scripts/game.js" defer></script>
+		<script src="./scripts/modal.js" defer></script>
+		<script src="./scripts/list.js" defer></script>
+		<script src="./scripts/possessions.js" defer></script>
+		<title>Koumori's</title>
+	</head>
+	<body>
+		<div class="list-button">
+			<button data-modal-target="#list-modal" class="nav-buttons">All Abilities</button>
+		</div>
+		<div class="game-buttons">
+			<button id="restart">Restart</button>
+			<button data-modal-target="#inventory-modal" class="nav-buttons" id="your">Your...</button>
+		</div>
+		<section class="container">
+			<div class="text" id="text"></div>
+			<div class="option-btns" id="option-buttons">
+				<!-- <div class="option-btn">Option 1</div>
+				<div class="option-btn">Option 2</div>
+				<div class="option-btn">Option 3</div>
+				<div class="option-btn">Option 4</div> -->
+			</div>
+		</section>
+		<section id="modal-section">
+			<!-- Inventory modal -->
+			<div class="modal" id="inventory-modal">
+				<div class="modal-header">
+					<div class="title">Inventory/Skills and Abilities</div>
+					<button data-close-button class="close" id="close">&times;</button>
+				</div>
+				<div class="modal-body" id="inventory-body">
+					<div class="contentBox">
+						<div class="label">BackPack Items</div>
+						<div class="content" id="backpack-content"></div>
+					</div>
+					<div class="contentBox">
+						<div class="label">Weapons</div>
+						<div class="content" id="weapons-content"></div>
+					</div>
+					<div class="contentBox">
+						<div class="label">Skills</div>
+						<div class="content" id="skills-content"></div>
+					</div>
+					<div class="contentBox">
+						<div class="label">Abilties</div>
+						<div class="content" id="abilities-content"></div>
+					</div>
+				</div>
+			</div>
+			<!-- List Modal -->
+			<div class="modal" id="list-modal">
+				<div class="modal-header">
+					<div class="title">List of All Weapons, Skills and Abilities</div>
+					<button data-close-button class="close" id="close">&times;</button>
+				</div>
+				<div class="modal-body" id="list-body">
+					<button data-mini-modal-target="#weapons-modal" class="list-btn">Legendary Weapons</button>
+                	<button data-mini-modal-target="#ability-modal" class="list-btn">Abilities</button>
+                	<button data-mini-modal-target="#skills-modal" class="list-btn">Skills</button>
+				</div>
+			</div>
+			<!-- Modals of List Modal -->
+			<div class="modal" id="weapons-modal">
+                <div class="modal-header">
+                    <div class="title">List of Legendary Weapons</div>
+                    <button data-mini-close-button class="close" id="close">&times;</button>
+                </div>
+                <div class="modal-body" id="weapons-body"></div>
+            </div>
+            <div class="modal" id="ability-modal">
+                <div class="modal-header">
+                    <div class="title">List of Abilities</div>
+                    <button data-mini-close-button class="close" id="close">&times;</button>
+                </div>
+                <div class="modal-body" id="ability-body"></div>
+            </div>
+            <div class="modal" id="skills-modal">
+                <div class="modal-header">
+                    <div class="title">List of Skills</div>
+                    <button data-mini-close-button class="close" id="close">&times;</button>
+                </div>
+                <div class="modal-body" id="skills-body"></div>
+            </div>
+			<!-- Overlay -->
+			<div class="overlay" id="overlay"></div>
+			<div class="mini-overlay" id="mini-overlay"></div>
+		</section>
+	</body>
+</html>
