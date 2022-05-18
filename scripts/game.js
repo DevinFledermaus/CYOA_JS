@@ -3,7 +3,7 @@ let possessedItems = {}
 let possessedWeapons = {}
 let possessedSkills = {}
 let possessedAbilities = {}
- 
+
 //// Fetch Request
 // Error Handling
 function handleErrors(response) {
@@ -13,9 +13,10 @@ function handleErrors(response) {
     return response;
 }
 
-// Gets Story Object Array
-async function getStory() {
-    const response = await fetch("https://koumori-cyoa-api.herokuapp.com/story-texts");
+//// Gets Story Object Array
+// Prologue
+async function getPrologue() {
+    const response = await fetch("https://koumori-cyoa-api.herokuapp.com/prologue");
 	handleErrors(response)
     const data = await response.json();
     for (i of data) {
@@ -23,9 +24,22 @@ async function getStory() {
     }
 }
 
-// Starts story at the beginning
-function beginning() {
-	getStory()
+// Fetch story depended on which character you've selected
+async function getStory() {
+	let character = localStorage.getItem("character")
+    const response = await fetch(`https://koumori-cyoa-api.herokuapp.com/${character}`);
+	handleErrors(response)
+    const data = await response.json();
+	storyTexts = []
+    for (i of data) {
+        storyTexts.push(i);
+    }
+	localStorage.removeItem("page")
+}
+
+// Starts story from the prologue
+function prologue() {
+	getPrologue()
 	.then(() => {
 		let page = parseInt(localStorage.getItem("page"))
 		if (page > 1) {
@@ -34,6 +48,29 @@ function beginning() {
 			showText(1)
 		}
 	})
+}
+
+function story() {
+	getStory()
+	.then(() => {
+		let page = parseInt(localStorage.getItem("page"))
+		if (page > 100) {
+			showText(page)
+		} else {
+			showText(101)
+		}
+	})
+}
+
+function start() {
+	let page = localStorage.getItem("page")
+	console.log(page);
+	if (page > 99) {
+		story()
+	} else {
+		prologue()
+	}
+
 }
 
 function showText(storyTextIndex) {
@@ -86,11 +123,17 @@ function showOption(option) {
 }
 
 function selectOption(option) {
+	if (option.character) {
+		localStorage.setItem("character", option.character)
+	}
+
 	const nextStoryTextIndex = option.nextPage;
     if (nextStoryTextIndex <= 0) {
         alert("GAMEOVER!!!!!!");
 		return restart();
-    }
+    } else if (nextStoryTextIndex === 100) {
+		return story()
+	}
 	storeInventory(option)
 	
     showText(nextStoryTextIndex);
@@ -133,7 +176,8 @@ function restart() {
 		localStorage.removeItem("acquiredWeapons");
 		localStorage.removeItem("acquiredSkills");
 		localStorage.removeItem("acquiredAbilities");
-		return beginning();
+		localStorage.removeItem("character");
+		return prologue();
 };
 
 const restartBtn = document.querySelector("#restart");
@@ -144,4 +188,4 @@ restartBtn.addEventListener("click", () => {
 	}
 });
 
-beginning();
+start()
