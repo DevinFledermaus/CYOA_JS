@@ -90,6 +90,9 @@ function showText(storyTextIndex) {
             button.classList.add("option-btn");
             button.addEventListener("click", () => selectOption(option));
             optionButtonsElement.appendChild(button);
+			if (option.character) {
+				button.style.backgroundColor = "red"
+			}
         }
     });
 
