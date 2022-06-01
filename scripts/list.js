@@ -1,102 +1,30 @@
-let abilities = [];
-let weapons = [];
-let skills = [];
+const url = "https://koumori-cyoa-api.herokuapp.com/stories";
 
-async function getAbilities() {
-    const response = await fetch("https://koumori-cyoa-api.herokuapp.com/abilities");
+async function getStories() {
+    const response = await fetch(url);
     const data = await response.json();
     for (i of data) {
-        abilities.push(i);
-        abilitiesList(i);
+		appendStoryButtons(i.name)
     }
+	let btnArray = document.querySelectorAll("#story-btn")
+
+	btnArray.forEach(button => {
+		button.addEventListener("click", () => {
+			localStorage.setItem("story-name", button.innerText)
+			localStorage.removeItem("page")
+			location.reload()
+		})
+	});
+	
 }
 
-async function getWeapons() {
-    const response = await fetch("https://koumori-cyoa-api.herokuapp.com/weapons");
-    const data = await response.json();
-    for (i of data) {
-        weapons.push(i);
-        weaponsList(i);
-    }
+const appendStoryButtons = (story) => {
+	const bodyElement = document.querySelector("#list-body");
+
+	const button = `<button class="option-btn" id="story-btn">${story}</button>`
+	bodyElement.innerHTML += button
+	
+
 }
 
-async function getSkills() {
-    const response = await fetch("https://koumori-cyoa-api.herokuapp.com/skills");
-    const data = await response.json();
-    for (i of data) {
-        skills.push(i);
-        skillsList(i);
-    }
-}
-
-const abilitiesList = (ability) => {
-    const bodyElement = document.querySelector("#ability-body");
-
-    let contentBox = `
-	<div class="contentBox ability">
-		<div class="label">${ability["name"]}</div>
-		<div class="content" id="ability-list">
-			<div class="item" id="desc-item">Description: ${ability["description"]}</div>
-			<div class="item" id="cost-item">Cost: ${ability["cost"]}</div>
-		</div>
-	</div>
-	`;
-    bodyElement.innerHTML += contentBox;
-
-    const accordion = document.querySelectorAll(".contentBox.ability");
-
-    for (let i = 0; i < accordion.length; i++) {
-        accordion[i].addEventListener("click", function () {
-            this.classList.toggle("active");
-        });
-    }
-};
-
-const weaponsList = (weapons) => {
-    const bodyElement = document.querySelector("#weapons-body");
-
-    let contentBox = `
-	<div class="contentBox weapons">
-		<div class="label">${weapons["name"]}</div>
-		<div class="content" id="weapons-list">
-			<div class="item" id="desc-item">Description: ${weapons["description"]}</div>
-			<div class="item" id="cost-item">Skill Required: ${weapons["requirements"]}</div>
-		</div>
-	</div>
-	`;
-    bodyElement.innerHTML += contentBox;
-
-    const accordion = document.querySelectorAll(".contentBox.weapons");
-
-    for (let i = 0; i < accordion.length; i++) {
-        accordion[i].addEventListener("click", function () {
-            this.classList.toggle("active");
-        });
-    }
-};
-
-const skillsList = (skills) => {
-    const bodyElement = document.querySelector("#skills-body");
-
-    let contentBox = `
-	<div class="contentBox skills">
-		<div class="label">${skills["name"]}</div>
-		<div class="content" id="skills-list">
-			<div class="item" id="desc-item">Description: ${skills["description"]}</div>
-		</div>
-	</div>
-	`;
-    bodyElement.innerHTML += contentBox;
-
-    const accordion = document.querySelectorAll(".contentBox.skills");
-
-    for (let i = 0; i < accordion.length; i++) {
-        accordion[i].addEventListener("click", function () {
-            this.classList.toggle("active");
-        });
-    }
-};
-
-getAbilities();
-getWeapons()
-getSkills()
+getStories();

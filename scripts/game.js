@@ -1,4 +1,5 @@
 let storyTexts = [];
+let storyObj = [];
 let possessedItems = {}
 let possessedWeapons = {}
 let possessedSkills = {}
@@ -14,33 +15,29 @@ function handleErrors(response) {
 }
 
 //// Gets Story Object Array
-// Prologue
-async function getPrologue() {
-    const response = await fetch("https://koumori-cyoa-api.herokuapp.com/prologue");
-	handleErrors(response)
-    const data = await response.json();
-    for (i of data) {
-        storyTexts.push(i);
-    }
-}
-
 // Fetch story depended on which character you've selected
 async function getStory() {
-	let character = localStorage.getItem("character")
-    const response = await fetch(`https://koumori-cyoa-api.herokuapp.com/${character}`);
+	let storyName = localStorage.getItem("story-name")
+	if(!storyName) {
+		storyName = "default"
+		localStorage.setItem("story-name", storyName)
+	} 
+    const response = await fetch(`https://koumori-cyoa-api.herokuapp.com/${storyName}`);
 	handleErrors(response)
     const data = await response.json();
-	storyTexts = []
-    for (i of data) {
-        storyTexts.push(i);
-    }
-	localStorage.removeItem("page")
+	storyObj = data[0]
 }
 
 // Starts story from the prologue
 function prologue() {
-	getPrologue()
+	getStory()
 	.then(() => {
+		let check = Object.keys(storyObj)
+		if (check.includes("default")) {
+			storyTexts = storyObj.default
+		} else {
+			storyTexts = storyObj.prologue
+		}
 		let page = parseInt(localStorage.getItem("page"))
 		if (page > 1) {
 			showText(page)
@@ -50,27 +47,40 @@ function prologue() {
 	})
 }
 
+// Starts story from the main story
 function story() {
 	getStory()
 	.then(() => {
-		let page = parseInt(localStorage.getItem("page"))
-		if (page > 100) {
-			showText(page)
-		} else {
-			showText(101)
+		let storyName = localStorage.getItem("story-name")
+		if (storyName !== "default") {
+			let character = localStorage.getItem("character")
+			console.log(character);
+			let story1
+			if (!character) {
+				story1 = "story"
+			} else {
+				story1 = character
+			}
+			storyTexts = storyObj[story1]
+			let page = parseInt(localStorage.getItem("page"))
+			if (page) {
+				showText(page)
+			} else {
+				showText(1)
+			}	
 		}
 	})
 }
 
+// Checks whether or not prologue has been completed and calls appropriate story function
 function start() {
-	let page = localStorage.getItem("page")
-	console.log(page);
-	if (page > 99) {
-		story()
-	} else {
+	let check = localStorage.getItem("prologue")
+	console.log(check);
+	if (!check) {
 		prologue()
+	} else {
+		story()
 	}
-
 }
 
 function showText(storyTextIndex) {
@@ -130,16 +140,22 @@ function selectOption(option) {
 		localStorage.setItem("character", option.character)
 	}
 
-	const nextStoryTextIndex = option.nextPage;
-    if (nextStoryTextIndex <= 0) {
-        alert("GAMEOVER!!!!!!");
-		return restart();
-    } else if (nextStoryTextIndex === 100) {
-		return story()
+	if (option.prologue) {
+		localStorage.setItem("prologue", option.prologue)
+		localStorage.removeItem("page")
+		story()
+	} else {
+		const nextStoryTextIndex = option.nextPage;
+		if (nextStoryTextIndex <= 0) {
+			alert("GAMEOVER!!!!!!");
+			return restart();
+		} else if (nextStoryTextIndex === 0) {
+			alert("HAHAHAHAHAHAHAHAHAHHAHA")
+		}
+		showText(nextStoryTextIndex);
 	}
 	storeInventory(option)
-	
-    showText(nextStoryTextIndex);
+
 }
 
 // Save any items obtained into localStorage
@@ -170,16 +186,13 @@ function storeInventory(option) {
 }
 
 function restart() {
+		storyTexts = [];
+		storyObj = [];
 		possessedItems = {}
 		possessedWeapons = {}
 		possessedSkills = {}
 		possessedAbilities = {}
-		localStorage.removeItem("page");
-		localStorage.removeItem("acquiredInventory");
-		localStorage.removeItem("acquiredWeapons");
-		localStorage.removeItem("acquiredSkills");
-		localStorage.removeItem("acquiredAbilities");
-		localStorage.removeItem("character");
+		localStorage.clear();
 		return prologue();
 };
 
